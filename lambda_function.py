@@ -14,7 +14,7 @@ bucket_name = os.environ['BUCKET_NAME']
 def get_message_from_s3(message_id):
 
     # Create a new S3 client.
-    client_s3 = boto3.client("s3", region_name=region)
+    client_s3 = boto3.client('s3', region_name=region)
     # Get the email object from the S3 bucket.
     object_s3 = client_s3.get_object(Bucket=bucket_name, Key=message_id)
     # Read the content of the message.
@@ -35,11 +35,17 @@ def create_message(message_id, file):
     
     email_to = mail_object.get_all('To')
     email_from = mail_object.get_all('From')
+    email_cc = mail_object.get_all('Cc')
+    #print(separator.join(email_from))
+    #print(type(email_from))
+    #print(separator.join(email_to))
+    #print(type(email_to))
 
     # The body text of the email.
     body_text = ('This is a forwarded message'
-        + "\nFrom: " + (separator.join(email_from) if email_from == [] else 'empty')
-        + "\nTo: " + (separator.join(email_to) if email_to == [] else 'empty')
+        + "\nFrom: " + (separator.join(email_from) if hasattr(email_from, '__iter__') else 'empty')
+        + "\nTo: " + (separator.join(email_to) if hasattr(email_to, '__iter__') else 'empty')
+        + "\nCc: " + (separator.join(email_cc) if hasattr(email_cc, '__iter__') else 'empty')
         + "\nSubject: " + subject
         + "\nArchive path: s3://" + bucket_name + '/' + message_id
     )
@@ -107,6 +113,7 @@ def lambda_handler(event, context):
     # Get the unique ID of the message. This corresponds to the name of the file
     # in S3.
     message_id = event['Records'][0]['ses']['mail']['messageId']
+    # message_id = '1vs9j44fldliuvmeacp83absfufdiq7vo3d4kt01'
     
     print(f"message_id {message_id}")
     print(f"bucket_name: {bucket_name}")
