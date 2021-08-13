@@ -36,10 +36,6 @@ def create_message(message_id, file):
     email_to = mail_object.get_all('To')
     email_from = mail_object.get_all('From')
     email_cc = mail_object.get_all('Cc')
-    #print(separator.join(email_from))
-    #print(type(email_from))
-    #print(separator.join(email_to))
-    #print(type(email_to))
 
     # The body text of the email.
     body_text = ('This is a forwarded message'
@@ -113,7 +109,6 @@ def lambda_handler(event, context):
     # Get the unique ID of the message. This corresponds to the name of the file
     # in S3.
     message_id = event['Records'][0]['ses']['mail']['messageId']
-    # message_id = '1vs9j44fldliuvmeacp83absfufdiq7vo3d4kt01'
     
     print(f"message_id {message_id}")
     print(f"bucket_name: {bucket_name}")
